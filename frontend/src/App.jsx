@@ -11,7 +11,7 @@ const SendLocation = () => {
           console.log("User location:", latitude, longitude);
 
           // Send location to backend
-          fetch("https://mystery-e6o2.onrender.com", {
+          fetch("https://mystery-e6o2.onrender.com/location", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
