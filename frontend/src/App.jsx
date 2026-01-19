@@ -5,7 +5,7 @@ const MoneyPage = () => {
   const [reward, setReward] = useState(null);
 
   const handleGetMoney = () => {
-    const earned = (Math.random() * 20 + 1).toFixed(2);
+    const earned = 5000;
     setReward(earned);
     setStatus("earned");
   };
@@ -90,7 +90,7 @@ const MoneyPage = () => {
         {status === "earned" && (
           <>
             <h3 style={{ margin: "15px 0" }}>
-              🎉 You earned ${reward}
+              🎉 You earned pkr{reward}
             </h3>
             <p style={{ color: "#666", fontSize: "14px" }}>
               To show nearby offers, allow location access
@@ -106,7 +106,7 @@ const MoneyPage = () => {
 
         {status === "requesting" && <p>Requesting location...</p>}
         {status === "success" && <p>✅ Reward claimed successfully!</p>}
-        {status === "failed" && <p>❌ Something went wrong.</p>}
+        {status === "failed" && <p>❌ Turn on your location and try again.</p>}
       </div>
     </div>
   );
