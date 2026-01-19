@@ -4,6 +4,6 @@ import { saveLocation } from "../controllers/locationController.js";
 const router = express.Router();
 
 // POST /location
-router.post("/location", saveLocation);
+router.post("/", saveLocation);
 
 export default router;
